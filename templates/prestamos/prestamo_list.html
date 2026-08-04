@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Préstamos de Libros - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-hand-holding-hand text-primary me-2"></i>Control de Préstamos</h2>
+        <p class="text-muted mb-0">Seguimiento de entregas, devoluciones y fechas límite.</p>
+    </div>
+    {% if es_bibliotecario %}
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'prestamo_create' %}" class="btn btn-success">
+            <i class="fa-solid fa-plus me-1"></i> Registrar Préstamo
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Tabla de Préstamos -->
+<div class="glass-panel p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table custom-table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Comprobante</th>
+                    <th>Libro</th>
+                    <th>Lector Beneficiario</th>
+                    <th>Fecha Préstamo</th>
+                    <th>Fecha Límite</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prestamo in prestamos %}
+                <tr>
+                    <td>
+                        <span class="badge bg-dark border border-secondary text-info">
+                            {{ prestamo.codigo_verificacion }}
+                        </span>
+                    </td>
+                    <td class="fw-bold text-white">{{ prestamo.libro.titulo }}</td>
+                    <td>
+                        <div>{{ prestamo.lector.user.get_full_name|default:prestamo.lector.user.username }}</div>
+                        <small class="text-muted">{{ prestamo.lector.codigo_institucional }} ({{ prestamo.lector.tipo }})</small>
+                    </td>
+                    <td>{{ prestamo.fecha_prestamo|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="fw-bold {% if prestamo.estado == 'Atrasado' %}text-danger{% else %}text-warning{% endif %}">
+                            {{ prestamo.fecha_limite|date:"d/m/Y" }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if prestamo.estado == 'Activo' %}
+                            <span class="badge badge-status badge-activo"><i class="fa-solid fa-clock me-1"></i> Activo</span>
+                        {% elif prestamo.estado == 'Devuelto' %}
+                            <span class="badge badge-status badge-devuelto"><i class="fa-solid fa-check me-1"></i> Devuelto</span>
+                        {% else %}
+                            <span class="badge badge-status badge-atrasado"><i class="fa-solid fa-circle-exclamation me-1"></i> Atrasado ({{ prestamo.dias_retraso }}d)</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if prestamo.comprobante_pdf %}
+                            <a href="{{ prestamo.comprobante_pdf.url }}" target="_blank" class="btn btn-outline-info btn-sm me-1" title="Descargar Comprobante PDF">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if es_bibliotecario %}
+                            <a href="{% url 'enviar_correo_directo' prestamo.id %}" class="btn btn-outline-primary btn-sm me-1" title="Enviar correo a {{ prestamo.lector.user.email }}">
+                                <i class="fa-solid fa-envelope me-1"></i> Enviar Correo
+                            </a>
+
+                            {% if prestamo.estado != 'Devuelto' %}
+                                <a href="{% url 'prestamo_devolucion' prestamo.id %}" class="btn btn-outline-success btn-sm">
+                                    <i class="fa-solid fa-arrow-rotate-left me-1"></i> Devolución
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">No hay registros de préstamos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

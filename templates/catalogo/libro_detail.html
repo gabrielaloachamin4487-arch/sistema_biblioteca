@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ libro.titulo }} - Detalle del Libro{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="{% url 'libro_list' %}" class="btn btn-outline-secondary btn-sm mb-3">
+            <i class="fa-solid fa-arrow-left me-1"></i> Volver al Catálogo
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Columna Portada -->
+    <div class="col-md-4">
+        <div class="glass-panel text-center p-3">
+            {% if libro.portada %}
+                <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}" class="img-fluid rounded shadow" style="max-height: 380px; width: 100%; object-fit: cover;">
+            {% else %}
+                <div class="bg-dark p-5 rounded text-muted">
+                    <i class="fa-solid fa-book-journal-whills fs-1 mb-2"></i>
+                    <p>Sin Portada Disponible</p>
+                </div>
+            {% endif %}
+
+            <div class="mt-4 d-grid gap-2">
+                {% if libro.muestra_pdf %}
+                    <a href="{{ libro.muestra_pdf.url }}" target="_blank" class="btn btn-outline-info">
+                        <i class="fa-solid fa-file-pdf me-1"></i> Leer / Descargar Muestra PDF
+                    </a>
+                {% else %}
+                    <button class="btn btn-outline-secondary" disabled>
+                        <i class="fa-solid fa-file-pdf me-1"></i> Sin Muestra PDF
+                    </button>
+                {% endif %}
+
+                {% if es_bibliotecario %}
+                    <a href="{% url 'prestamo_create' %}?libro={{ libro.id }}" class="btn btn-success">
+                        <i class="fa-solid fa-hand-holding-hand me-1"></i> Realizar Préstamo a Lector
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna Información -->
+    <div class="col-md-8">
+        <div class="glass-panel h-100 p-4">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <span class="badge bg-primary mb-2">{{ libro.categoria|default:"Sin Categoría" }}</span>
+                    <h2 class="fw-bold text-white mb-1">{{ libro.titulo }}</h2>
+                    <h5 class="text-muted mb-4"><i class="fa-regular fa-user me-2"></i>{{ libro.autor }}</h5>
+                </div>
+                {% if es_bibliotecario %}
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Opciones
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="{% url 'libro_update' libro.id %}"><i class="fa-solid fa-pen me-2"></i>Editar</a></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'libro_delete' libro.id %}"><i class="fa-solid fa-trash me-2"></i>Eliminar</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-sm-4">
+                    <div class="p-3 bg-dark rounded border border-secondary">
+                        <small class="text-muted d-block">ISBN</small>
+                        <strong class="text-white">{{ libro.isbn }}</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-sm-4">
+                    <div class="p-3 bg-dark rounded border border-secondary">
+                        <small class="text-muted d-block">Copias Totales</small>
+                        <strong class="text-white">{{ libro.cantidad_total }}</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-sm-4">
+                    <div class="p-3 bg-dark rounded border border-secondary">
+                        <small class="text-muted d-block">Copias Disponibles</small>
+                        {% if libro.copias_disponibles > 0 %}
+                            <strong class="text-success">{{ libro.copias_disponibles }}</strong>
+                        {% else %}
+                            <strong class="text-danger">0 (Agotado)</strong>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if libro.muestra_pdf %}
+            <div class="mt-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-pdf text-danger me-2"></i>Visor de Muestra Digital</h5>
+                <div class="ratio ratio-16x9 rounded overflow-hidden border border-secondary">
+                    <iframe src="{{ libro.muestra_pdf.url }}" title="Muestra PDF"></iframe>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

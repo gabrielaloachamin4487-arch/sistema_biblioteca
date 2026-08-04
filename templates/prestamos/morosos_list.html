@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Lectores Morosos y Sancionados - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h2 class="fw-bold mb-1 text-danger">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>Reporte de Lectores Morosos
+        </h2>
+        <p class="text-muted mb-0">Listado de usuarios con préstamos atrasados y sanciones activas.</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'exportar_morosos_excel' %}" class="btn btn-danger me-2">
+            <i class="fa-solid fa-file-excel me-1"></i> Excel
+        </a>
+        <a href="{% url 'exportar_morosos_csv' %}" class="btn btn-outline-light">
+            <i class="fa-solid fa-file-csv me-1"></i> CSV
+        </a>
+    </div>
+</div>
+
+<div class="glass-panel p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table custom-table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Código Institucional</th>
+                    <th>Lector Sancionado</th>
+                    <th>Tipo</th>
+                    <th>Libro Atrasado</th>
+                    <th>Fecha Límite Vencida</th>
+                    <th>Días de Mora</th>
+                    <th class="text-end">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in morosos %}
+                <tr>
+                    <td class="fw-bold text-white">{{ p.lector.codigo_institucional }}</td>
+                    <td>
+                        <div class="fw-bold">{{ p.lector.user.get_full_name|default:p.lector.user.username }}</div>
+                        <small class="text-muted">{{ p.lector.user.email }}</small>
+                    </td>
+                    <td><span class="badge bg-secondary">{{ p.lector.tipo }}</span></td>
+                    <td class="text-info fw-bold">{{ p.libro.titulo }}</td>
+                    <td class="text-danger fw-bold">{{ p.fecha_limite|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="badge bg-danger fs-6 px-3 py-2">
+                            <i class="fa-solid fa-clock me-1"></i> {{ p.dias_retraso }} día(s)
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'enviar_correo_directo' p.id %}" class="btn btn-sm btn-outline-danger me-1" title="Enviar correo de alerta a {{ p.lector.user.email }}">
+                            <i class="fa-solid fa-paper-plane me-1"></i> Notificar por Correo
+                        </a>
+                        <a href="{% url 'prestamo_devolucion' p.id %}" class="btn btn-sm btn-success">
+                            <i class="fa-solid fa-rotate-left me-1"></i> Regularizar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <i class="fa-solid fa-circle-check fs-1 text-success mb-3"></i>
+                        <h4 class="text-white">¡No existen lectores morosos!</h4>
+                        <p class="text-muted">Todos los préstamos se encuentran al día y sin sanciones vigentes.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

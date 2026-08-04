@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Lectores - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-users text-primary me-2"></i>Directorio de Lectores</h2>
+        <p class="text-muted mb-0">Gestión de Estudiantes y Docentes registrados en la institución.</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'lector_create' %}" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus me-1"></i> Registrar Lector
+        </a>
+    </div>
+</div>
+
+<!-- Tabla de Lectores -->
+<div class="glass-panel p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table custom-table mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Carné / Foto</th>
+                    <th>Código Institucional</th>
+                    <th>Nombre Completo</th>
+                    <th>Tipo</th>
+                    <th>Correo Electrónico</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lector in lectores %}
+                <tr>
+                    <td>
+                        {% if lector.foto_carne %}
+                            <img src="{{ lector.foto_carne.url }}" alt="Foto" class="rounded-circle object-fit-cover" width="40" height="40">
+                        {% else %}
+                            <div class="rounded-circle bg-dark d-flex align-items-center justify-content-center text-muted border border-secondary" style="width:40px; height:40px;">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold text-white">{{ lector.codigo_institucional }}</td>
+                    <td>{{ lector.user.get_full_name|default:lector.user.username }}</td>
+                    <td>
+                        {% if lector.tipo == 'Docente' %}
+                            <span class="badge bg-purple bg-opacity-20 text-info border border-info">Docente</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Estudiante</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted">{{ lector.user.email|default:"Sin Correo" }}</td>
+                    <td>
+                        {% if lector.estado == 'Habilitado' %}
+                            <span class="badge bg-success">Habilitado</span>
+                        {% else %}
+                            <span class="badge bg-danger">Sancionado</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'lector_update' lector.id %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fa-solid fa-user-pen"></i> Editar / Cambiar Estado
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">No se encontraron lectores registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

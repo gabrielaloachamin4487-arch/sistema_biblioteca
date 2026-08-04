@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Libros - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-book text-primary me-2"></i>Catálogo de Recursos Bibliográficos</h2>
+        <p class="text-muted mb-0">Explora nuestro catálogo de libros físicos y muestras digitales.</p>
+    </div>
+    {% if es_bibliotecario %}
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'libro_create' %}" class="btn btn-primary">
+            <i class="fa-solid fa-plus me-1"></i> Registrar Libro
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Buscador y Filtros -->
+<div class="glass-panel mb-4 p-3">
+    <form method="get" class="row g-3 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" name="q" value="{{ query }}" class="form-control bg-dark text-white border-secondary" placeholder="Buscar por Título, Autor, ISBN o Categoría...">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <select name="categoria" class="form-select bg-dark text-white border-secondary">
+                <option value="">-- Todas las Categorías --</option>
+                {% for cat in categorias %}
+                    <option value="{{ cat.id }}" {% if categoria_id == cat.id|stringformat:"i" %}selected{% endif %}>{{ cat.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-check form-switch pt-2">
+                <input class="form-check-input" type="checkbox" name="disponibles" value="1" id="switchDisponibles" {% if solo_disponibles %}checked{% endif %}>
+                <label class="form-check-label text-muted small" for="switchDisponibles">Solo Disponibles</label>
+            </div>
+        </div>
+
+        <div class="col-md-2 text-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fa-solid fa-filter me-1"></i> Filtrar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Rejilla de Tarjetas (Cards) -->
+<div class="row g-4">
+    {% for libro in libros %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="book-card">
+            <div class="book-cover-wrapper">
+                {% if libro.portada %}
+                    <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}" class="book-cover-img">
+                {% else %}
+                    <div class="text-center p-3 text-muted">
+                        <i class="fa-solid fa-book-journal-whills fs-1 mb-2"></i>
+                        <div class="small">Sin Portada</div>
+                    </div>
+                {% endif %}
+
+                {% if libro.copias_disponibles > 0 %}
+                    <span class="book-badge-stock stock-available">
+                        <i class="fa-solid fa-circle-check me-1"></i> {{ libro.copias_disponibles }} Disp.
+                    </span>
+                {% else %}
+                    <span class="book-badge-stock stock-out">
+                        <i class="fa-solid fa-circle-xmark me-1"></i> Agotado
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="book-body">
+                <div class="text-primary small fw-bold mb-1">{{ libro.categoria|default:"Sin Categoría" }}</div>
+                <h5 class="book-title" title="{{ libro.titulo }}">{{ libro.titulo }}</h5>
+                <p class="book-author"><i class="fa-regular fa-user me-1"></i> {{ libro.autor }}</p>
+                <div class="text-muted small mb-3">
+                    <i class="fa-solid fa-barcode me-1"></i> ISBN: {{ libro.isbn }}
+                </div>
+
+                <div class="mt-auto d-flex gap-2">
+                    <a href="{% url 'libro_detail' libro.id %}" class="btn btn-outline-light btn-sm flex-grow-1">
+                        <i class="fa-solid fa-eye me-1"></i> Detalle
+                    </a>
+                    {% if es_bibliotecario %}
+                    <a href="{% url 'libro_update' libro.id %}" class="btn btn-outline-warning btn-sm">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <a href="{% url 'libro_delete' libro.id %}" class="btn btn-outline-danger btn-sm">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="glass-panel py-5">
+            <i class="fa-solid fa-book-open-reader fs-1 text-muted mb-3"></i>
+            <h4>No se encontraron libros en el catálogo</h4>
+            <p class="text-muted">Intenta ajustando tus términos de búsqueda o filtros.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

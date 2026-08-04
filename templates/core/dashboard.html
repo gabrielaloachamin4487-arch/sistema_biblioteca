@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Sistema de Biblioteca{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">
+            <i class="fa-solid fa-gauge-high text-primary me-2"></i>Panel de Control Principal
+        </h2>
+        <p class="text-muted">Resumen en tiempo real del inventario, lectores activos y métricas de préstamos.</p>
+    </div>
+    {% if is_bibliotecario %}
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'libro_create' %}" class="btn btn-primary me-2">
+            <i class="fa-solid fa-plus me-1"></i> Nuevo Libro
+        </a>
+        <a href="{% url 'prestamo_create' %}" class="btn btn-success">
+            <i class="fa-solid fa-hand-holding-hand me-1"></i> Prestar
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Métricas Clave -->
+<div class="row g-4 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-muted small fw-bold">TOTAL LIBROS</span>
+                <div class="stat-icon bg-primary bg-opacity-20 text-primary">
+                    <i class="fa-solid fa-book"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-0">{{ total_libros }}</h3>
+            <span class="text-muted small">{{ copias_disponibles }} copias disponibles de {{ total_copias }}</span>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-muted small fw-bold">LECTORES</span>
+                <div class="stat-icon bg-info bg-opacity-20 text-info">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-0">{{ total_lectores }}</h3>
+            <span class="text-muted small">Docentes y Estudiantes</span>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-muted small fw-bold">PRÉSTAMOS ACTIVOS</span>
+                <div class="stat-icon bg-success bg-opacity-20 text-success">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-0">{{ prestamos_activos }}</h3>
+            <span class="text-muted small">En circulación actualmente</span>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-muted small fw-bold">MOROSOS / ATRASOS</span>
+                <div class="stat-icon bg-danger bg-opacity-20 text-danger">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold text-danger mb-0">{{ prestamos_atrasados }}</h3>
+            <span class="text-muted small">{{ lectores_sancionados }} lectores sancionados</span>
+        </div>
+    </div>
+</div>
+
+<!-- Sección Central -->
+<div class="row g-4">
+    <!-- Libros agregados recientemente -->
+    <div class="col-lg-8">
+        <div class="glass-panel h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-book-open text-primary me-2"></i>Novedades del Catálogo</h5>
+                <a href="{% url 'libro_list' %}" class="btn btn-outline-light btn-sm rounded-pill">Ver Todo el Catálogo</a>
+            </div>
+
+            <div class="row g-3">
+                {% for libro in libros_recientes %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="book-card p-3 d-flex flex-column h-100">
+                        <div class="book-cover-wrapper mb-2 rounded" style="height:140px;">
+                            {% if libro.portada %}
+                                <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}" class="book-cover-img">
+                            {% else %}
+                                <div class="text-center p-3 text-muted">
+                                    <i class="fa-solid fa-book-journal-whills fs-1 mb-2"></i>
+                                    <div class="small">Sin Portada</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <h6 class="fw-bold text-white mb-1 text-truncate">{{ libro.titulo }}</h6>
+                        <p class="text-muted small mb-2 text-truncate">{{ libro.autor }}</p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            {% if libro.copias_disponibles > 0 %}
+                                <span class="badge bg-success">Disponibles: {{ libro.copias_disponibles }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">Agotado</span>
+                            {% endif %}
+                            <a href="{% url 'libro_detail' libro.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-4 text-muted">
+                    <i class="fa-solid fa-folder-open fs-1 mb-2"></i>
+                    <p>Aún no hay libros registrados en la biblioteca.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Rápidas & Exportación -->
+    <div class="col-lg-4">
+        <div class="glass-panel mb-4">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-bolt text-warning me-2"></i>Accesos Rápidos</h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'libro_list' %}?disponibles=1" class="btn btn-outline-info text-start">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar Libros Disponibles
+                </a>
+                {% if is_bibliotecario %}
+                <a href="{% url 'prestamo_create' %}" class="btn btn-outline-success text-start">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Registrar Nuevo Préstamo
+                </a>
+                <a href="{% url 'lector_create' %}" class="btn btn-outline-primary text-start">
+                    <i class="fa-solid fa-user-plus me-2"></i> Registrar Nuevo Lector
+                </a>
+                <a href="{% url 'morosos_list' %}" class="btn btn-outline-danger text-start">
+                    <i class="fa-solid fa-user-lock me-2"></i> Ver Lectores Sancionados
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if is_bibliotecario %}
+        <div class="glass-panel">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-excel text-success me-2"></i>Reportes y Exportación</h5>
+            <p class="text-muted small">Exporta datos actualizados del catálogo y morosos en Excel o CSV.</p>
+            <div class="d-grid gap-2">
+                <a href="{% url 'exportar_inventario' %}" class="btn btn-success text-start">
+                    <i class="fa-solid fa-file-excel me-2"></i> Exportar Inventario (Excel)
+                </a>
+                <a href="{% url 'exportar_morosos_excel' %}" class="btn btn-danger text-start">
+                    <i class="fa-solid fa-file-excel me-2"></i> Exportar Morosos (Excel)
+                </a>
+                <a href="{% url 'exportar_morosos_csv' %}" class="btn btn-outline-light text-start">
+                    <i class="fa-solid fa-file-csv me-2"></i> Exportar Morosos (CSV)
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
