@@ -1,7 +1,7 @@
 import os
-import dj_database_url
 import sys
 from pathlib import Path
+import dj_database_url
 from dotenv import load_dotenv
 
 # Cargar variables de entorno desde .env
@@ -13,9 +13,9 @@ sys.path.insert(0, str(BASE_DIR / 'apps'))
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-biblioteca-key-2026')
 
-DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't')
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,*').split(',')]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com,*').split(',')]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Importante para archivos estáticos en produccion
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -46,7 +47,7 @@ ROOT_URLCONF = 'biblioteca_project.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -63,18 +64,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'biblioteca_project.wsgi.application'
 
-# Configuración de Base de Datos
-# Intenta PostgreSQL según especificación del requerimiento; si no hay servidor local postgres listo, usa SQLite para pruebas inmediatas.
-DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.postgresql')
+# ==============================================================================
+# CONFIGURACIÓN DE BASE DE DATOS (Neon PostgreSQL / Fallback SQLite)
+# ==============================================================================
+DATABASE_URL = os.getenv('DATABASE_URL')
 
-if os.getenv('USE_SQLITE', 'False').lower() in ('true', '1'):
+if DATABASE_URL:
     DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -103,13 +112,6 @@ LOGIN_URL = '/usuarios/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/usuarios/login/'
 
-# Configuración de Correos Electrónicos
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Biblioteca Institucional <noreply@biblioteca.edu>')
-
-# ==============================================================================
-# CONFIGURACIÓN DE CORREOS ELECTRÓNICOS (SMTP)
-# ==============================================================================
 # ==============================================================================
 # CONFIGURACIÓN DE CORREOS ELECTRÓNICOS (SMTP)
 # ==============================================================================
@@ -120,4 +122,4 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False').lower() in ('true', '1', 't'
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True').lower() in ('true', '1', 't')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@biblioteca.edu')
