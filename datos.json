@@ -1,0 +1,250 @@
+[
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$GoYWPbEq7qFomhduTX4VRA$GTQmud+nViKFnFDiCTiY0JAJWtH5MxcaehxHdI7UfpY=",
+        "last_login": "2026-08-04T20:04:21.047Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "Carlos",
+        "last_name": "Bibliotecario",
+        "email": "admin@biblioteca.edu",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-08-02T16:27:17.264Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$A2Eh6mwbK0ttiPLgDLwSsB$V9xyoNIHTwLr5HnSYCmUmQxcoxaL5DDlka5Cw3SfEps=",
+        "last_login": "2026-08-02T16:40:28.592Z",
+        "is_superuser": false,
+        "username": "estudiante1",
+        "first_name": "Ana",
+        "last_name": "Gómez",
+        "email": "ana.gomez@estudiante.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-02T16:27:17.764Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$ve1DqmtDj48iarq1CcC95q$ph+cuo63+t6scmJfNF/uzktwWlqy9csduHaajc3ZCqM=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "estudiante2",
+        "first_name": "Luis",
+        "last_name": "Martínez",
+        "email": "gabriela.loachamin4487@utc.edu.ec",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-02T16:27:18.287Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$l04Yi3vUiG6oPI4wAnkSWX$P331DAArxku7Q3WKxTxiLIKq6l4gw0DisNyfZ+NZZIE=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "docente1",
+        "first_name": "Dra. Elena",
+        "last_name": "Ríos",
+        "email": "elena.rios@docente.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-02T16:27:18.805Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "gadsdo990hwibj7yzreh1ukdrse4yapm",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAQAP-yZ0Og0KX06L1vILssStXQpLQn499Nkx70OjOZN0TatxL3ltc4C4xg4PLLmNIz10PIg-p9UWmp2zqzOhJ12qamRfLrerZ_g0KtwAgaDQpqjUg-3cR57q225Gyy3jFzlzKSzuicDEKBuxxkCKhT6I3xBuHzBdM4N2g:1wrLN7:iySprOLe8qql12RWVAK1QEskHuy13crusNsxjfhHs9g",
+        "expire_date": "2026-08-18T20:04:21.054Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "tiq5ldtsjp1pfty5bj3tbtmwfuqqucpn",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAQAP-yZ0Og0KX06L1vILssStXQpLQn499Nkx70OjOZN0TatxL3ltc4C4xg4PLLmNIz10PIg-p9UWmp2zqzOhJ12qamRfLrerZ_g0KtwAgaDQpqjUg-3cR57q225Gyy3jFzlzKSzuicDEKBuxxkCKhT6I3xBuHzBdM4N2g:1wqZU2:gQPC2SqXO7EZmhTnVGP6FtZTG5WmXisQklwk75sMmyU",
+        "expire_date": "2026-08-16T16:56:18.219Z"
+    }
+},
+{
+    "model": "catalogo.categoria",
+    "pk": 1,
+    "fields": {
+        "nombre": "Tecnología & Programación",
+        "descripcion": null
+    }
+},
+{
+    "model": "catalogo.categoria",
+    "pk": 2,
+    "fields": {
+        "nombre": "Ciencias Exactas",
+        "descripcion": null
+    }
+},
+{
+    "model": "catalogo.categoria",
+    "pk": 3,
+    "fields": {
+        "nombre": "Literatura Hispana",
+        "descripcion": null
+    }
+},
+{
+    "model": "catalogo.categoria",
+    "pk": 4,
+    "fields": {
+        "nombre": "Historia Universal",
+        "descripcion": null
+    }
+},
+{
+    "model": "catalogo.libro",
+    "pk": 1,
+    "fields": {
+        "titulo": "Python a Fondo y Arquitectura Django",
+        "autor": "Guido van Rossum",
+        "isbn": "978-0134685991",
+        "categoria": 1,
+        "portada": "portadas/portada_978-0134685991.jpg",
+        "muestra_pdf": "muestras/muestra_978-0134685991.pdf",
+        "cantidad_total": 5,
+        "copias_disponibles": 3,
+        "fecha_creacion": "2026-08-02T16:27:19.356Z"
+    }
+},
+{
+    "model": "catalogo.libro",
+    "pk": 2,
+    "fields": {
+        "titulo": "Cien Años de Soledad",
+        "autor": "Gabriel García Márquez",
+        "isbn": "978-0307474728",
+        "categoria": 3,
+        "portada": "portadas/portada_978-0307474728.jpg",
+        "muestra_pdf": "muestras/muestra_978-0307474728.pdf",
+        "cantidad_total": 3,
+        "copias_disponibles": 1,
+        "fecha_creacion": "2026-08-02T16:27:19.404Z"
+    }
+},
+{
+    "model": "catalogo.libro",
+    "pk": 3,
+    "fields": {
+        "titulo": "Principios de Física Cuántica",
+        "autor": "Richard Feynman",
+        "isbn": "978-0465024933",
+        "categoria": 2,
+        "portada": "portadas/portada_978-0465024933.jpg",
+        "muestra_pdf": "muestras/muestra_978-0465024933.pdf",
+        "cantidad_total": 2,
+        "copias_disponibles": 2,
+        "fecha_creacion": "2026-08-02T16:27:19.437Z"
+    }
+},
+{
+    "model": "catalogo.libro",
+    "pk": 4,
+    "fields": {
+        "titulo": "Breve Historia del Siglo XX",
+        "autor": "Eric Hobsbawm",
+        "isbn": "978-8484320470",
+        "categoria": 4,
+        "portada": "portadas/portada_978-8484320470.jpg",
+        "muestra_pdf": "muestras/muestra_978-8484320470.pdf",
+        "cantidad_total": 4,
+        "copias_disponibles": 4,
+        "fecha_creacion": "2026-08-02T16:27:19.470Z"
+    }
+},
+{
+    "model": "usuarios.lector",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "estudiante1"
+        ],
+        "codigo_institucional": "EST-2026-001",
+        "tipo": "Estudiante",
+        "foto_carne": "",
+        "estado": "Habilitado",
+        "fecha_registro": "2026-08-02T16:27:18.280Z"
+    }
+},
+{
+    "model": "usuarios.lector",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "estudiante2"
+        ],
+        "codigo_institucional": "EST-2026-002",
+        "tipo": "Estudiante",
+        "foto_carne": "",
+        "estado": "Sancionado",
+        "fecha_registro": "2026-08-02T16:27:18.799Z"
+    }
+},
+{
+    "model": "usuarios.lector",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "docente1"
+        ],
+        "codigo_institucional": "DOC-2026-099",
+        "tipo": "Docente",
+        "foto_carne": "",
+        "estado": "Habilitado",
+        "fecha_registro": "2026-08-02T16:27:19.315Z"
+    }
+},
+{
+    "model": "prestamos.prestamo",
+    "pk": 1,
+    "fields": {
+        "libro": 1,
+        "lector": 1,
+        "fecha_prestamo": "2026-07-31",
+        "fecha_limite": "2026-08-07",
+        "fecha_devolucion_real": null,
+        "estado": "Activo",
+        "comprobante_pdf": "",
+        "codigo_verificacion": "BIB-4DCC244A",
+        "dias_retraso": 0
+    }
+},
+{
+    "model": "prestamos.prestamo",
+    "pk": 2,
+    "fields": {
+        "libro": 2,
+        "lector": 2,
+        "fecha_prestamo": "2026-07-21",
+        "fecha_limite": "2026-07-28",
+        "fecha_devolucion_real": null,
+        "estado": "Atrasado",
+        "comprobante_pdf": "comprobantes/comprobante_BIB-60839039.pdf",
+        "codigo_verificacion": "BIB-60839039",
+        "dias_retraso": 5
+    }
+}
+]
