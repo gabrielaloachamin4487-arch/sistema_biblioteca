@@ -36,7 +36,7 @@ def enviar_correo_directo(request, pk):
             f"Te notificamos que tu préstamo del libro '{prestamo.libro.titulo}' presenta un retraso.\n"
             f"- Fecha Límite de Devolución: {prestamo.fecha_limite.strftime('%d/%m/%Y')}\n"
             f"- Código de Comprobante: {prestamo.codigo_verificacion}\n\n"
-            f"Tu cuenta se encuentra temporalmente SANCCIONADA. Por favor acércate a la biblioteca a la brevedad "
+            f"Tu cuenta se encuentra temporalmente SANCIONADA. Por favor acércate a la biblioteca a la brevedad "
             f"para realizar la entrega del ejemplar y regularizar tu estado.\n\n"
             f"Atentamente,\nDirección de Biblioteca Institucional"
         )
@@ -120,11 +120,27 @@ def prestamo_create(request):
         form = PrestamoForm(request.POST)
         if form.is_valid():
             try:
+                # 1. Guardar el préstamo en la base de datos de Neon primero
                 prestamo = form.save()
-                # Generar comprobante PDF
-                generar_comprobante_pdf(prestamo)
-                messages.success(request, f"Préstamo registrado exitosamente. Código de comprobante: {prestamo.codigo_verificacion}")
+                
+                # 2. Intentar generar el comprobante PDF en un bloque seguro
+                try:
+                    generar_comprobante_pdf(prestamo)
+                except (FileNotFoundError, OSError, Exception) as pdf_err:
+                    # Si falla por archivo no encontrado en el almacenamiento temporal de Render,
+                    # se notifica pero no se interrumpe la creación del préstamo.
+                    messages.warning(
+                        request, 
+                        f"Préstamo registrado correctamente en la base de datos, "
+                        f"pero no se pudo adjuntar el archivo físico del PDF ({pdf_err})."
+                    )
+
+                messages.success(
+                    request, 
+                    f"Préstamo autorizado y registrado exitosamente. Código de comprobante: {prestamo.codigo_verificacion}"
+                )
                 return redirect('prestamo_list')
+
             except Exception as e:
                 messages.error(request, f"Error al procesar el préstamo: {e}")
     else:
