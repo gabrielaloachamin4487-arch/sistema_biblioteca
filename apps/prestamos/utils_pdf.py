@@ -8,7 +8,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 def generar_comprobante_pdf(prestamo):
-    """Genera un archivo PDF elegante con el comprobante de entrega del préstamo."""
+    """Genera un archivo PDF elegante con el comprobante de entrega del préstamo sin romper por archivos de medios ausentes."""
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -133,13 +133,18 @@ def generar_comprobante_pdf(prestamo):
     t_firmas.setStyle(TableStyle([('ALIGN', (0,0), (-1,-1), 'CENTER')]))
     elements.append(t_firmas)
 
-    # Construir PDF
+    # Construir PDF en memoria
     doc.build(elements)
 
     pdf_content = buffer.getvalue()
     buffer.close()
 
-    # Guardar en FileField del modelo
+    # Guardado seguro en el modelo sin re-desencadenar validaciones de disco
     filename = f"comprobante_{prestamo.codigo_verificacion}.pdf"
-    prestamo.comprobante_pdf.save(filename, ContentFile(pdf_content), save=True)
+    try:
+        prestamo.comprobante_pdf.save(filename, ContentFile(pdf_content), save=False)
+        prestamo.save(update_fields=['comprobante_pdf'])
+    except Exception as e:
+        print(f"Error al guardar el comprobante en disco: {e}")
+
     return prestamo.comprobante_pdf
